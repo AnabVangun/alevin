@@ -1,6 +1,5 @@
 package alevin;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -13,43 +12,51 @@ public class Main {
      * @param args ignored
      */
     public static void main(String[] args) {
-        Actor player1 = new Actor("Player1", 10, 2, 0, 0);
-        Actor player2 = new Actor("Player2", 15, 1, 3, 6);
-        Scanner scanner = new Scanner(System.in);
-        BattleManager manager = new BattleManager(player1, player2);
+        new Main().runGame(new Actor("Player1", 10, 2, 0, 0), new Actor("Player2", 15, 1, 3, 6));
+    }
+    
+    private final Scanner scanner = new Scanner(System.in);
+    private static final String NEWLINE = System.getProperty("line.separator");
+    private BattleManager manager;
+    
+    Main(){}
+    
+    public void runGame(Actor player1, Actor player2){
+        manager = new BattleManager(player1, player2);
         System.out.println("Battle beginning");
         while (manager.isWon() == null){
-            System.out.println(getDisplayableStatus(manager));
-            handleTurn(manager, scanner);
+            System.out.println(getDisplayableStatus());
+            handleTurn();
         }
         System.out.println(manager.isWon().name + " has won the battle");
     }
+    
     /**
      * Format the current state of the battle to display it to the user.
-     * @param manager BattleManager handling the battle.
      * @return a String representing the state of the players.
      */
-    public static String getDisplayableStatus(BattleManager manager){
-        StringBuilder builder = new StringBuilder("Battle status:\n");
+    private String getDisplayableStatus(){
+        StringBuilder builder = new StringBuilder("Battle status:").append(NEWLINE);
         for (Actor actor:manager.getActors()){
             builder.append("Actor ").append(actor.name).append("\t\tPosition: ")
                 .append("[").append(actor.getXPosition()).append(", ").append(actor.getYPosition())
-                .append("]\t\tHealth points:").append(actor.getCurrentHp()).append("\n");
+                .append("]\t\tHealth points:").append(actor.getCurrentHp()).append(NEWLINE);
         }
         return builder.toString();
     }
+    
     /**
      * Handle the course of a turn. Handle user input and perform the selected action.
      * @param manager BattleManager handling the battle.
      * @param scanner Scanner used to parse the user input.
      */
-    public static void handleTurn(BattleManager manager, Scanner scanner){
+    private void handleTurn(){
         System.out.println("It is " + manager.getActors().get(manager.getCurrentActorIndex()).name 
             + "'s turn. What will he do?");
         boolean search = true;
         String result;
         while(search){
-            System.out.println(possibleOptions(manager));
+            System.out.println(possibleOptions());
             String input = scanner.next();
             search = false;
             switch (input){
@@ -58,8 +65,8 @@ public class Main {
                         1-manager.getCurrentActorIndex()));
                     break;
                 case "M":
-                    result = manager.move(getMoveDestination(scanner, "x"), 
-                            getMoveDestination(scanner, "y"));
+                    result = manager.move(getMoveDestination("x"), 
+                            getMoveDestination("y"));
                     break;
                 case "U":
                     if (manager.canUndo()){
@@ -86,29 +93,30 @@ public class Main {
             System.out.println(result);
         }
     }
+    
     /**
      * Format the options available to a user.
-     * @param manager BattleManager handling the battle.
      * @return a String presenting all the available options to the user.
      */
-    public static String possibleOptions(BattleManager manager){
-        StringBuilder builder = new StringBuilder(
-                "Possible options are:\nA: attack the other actor.\nM: move to a new position.");
+    private String possibleOptions(){
+        StringBuilder builder = new StringBuilder("Possible options are:").append(NEWLINE)
+            .append("A: attack the other actor.").append(NEWLINE)
+            .append("M: move to a new position.");
         if (manager.canUndo()){
-            builder.append("\nU: undo the last command.");
+            builder.append(NEWLINE).append("U: undo the last command.");
         }
         if (manager.canRedo()){
-            builder.append("\nR: redo the last command.");
+            builder.append(NEWLINE).append("R: redo the last command.");
         }
         return builder.toString();
     }
+    
     /**
      * Handle the acquisition of a coordinate for a {@link Move} action from the user.
-     * @param scanner Scanner used to parse the user input.
      * @param coordinate Which of the coordinates to ask from the user.
      * @return 
      */
-    public static int getMoveDestination(Scanner scanner, String coordinate){
+    private int getMoveDestination(String coordinate){
         System.out.println("Enter the " + coordinate + "-coordinate of your destination");
         if (!scanner.hasNextInt()){
             do{

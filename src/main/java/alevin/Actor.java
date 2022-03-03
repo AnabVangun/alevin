@@ -18,35 +18,38 @@ public class Actor {
         this.xPosition = xPos;
         this.yPosition = yPos;
     }
-    /** Return the current number of health points of the actor. */
+    
     public int getCurrentHp(){
-        return this.currentHp;
+        return currentHp;
     }
+    
     /**
      * Subtract damages to the health points of the actor.
      * @param damage number of health points to deduct. If negative, the actor is healed.
      */
     public void injure(int damage){
-        this.currentHp -= damage;
+        currentHp -= damage;
     }
     
     public boolean isAlive(){
-        return (this.currentHp > 0);
+        return currentHp > 0;
     }
+    
     /**
      * Move to a new position.
      * @param x the new x-coordinate of the actor.
      * @param y the new y-coordinate of the actor.
      */
     public void move(int x, int y){
-        this.xPosition = x;
-        this.yPosition = y;
+        xPosition = x;
+        yPosition = y;
     }
     
     public int getXPosition(){
-        return this.xPosition;
+        return xPosition;
     }
+    
     public int getYPosition(){
-        return this.yPosition;
+        return yPosition;
     }
 }
